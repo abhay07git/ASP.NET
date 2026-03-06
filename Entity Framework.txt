@@ -1,0 +1,19 @@
+Working with Entity Framework
+
+Entity Framework (EF) is an open-source Object-Relational Mapper (ORM) for .NET applications, including those using C#. It allows developers to interact with a database using domain-specific C# objects (like classes and properties) instead of writing raw SQL queries.
+
+Entity Framework (EF) allows data to be stored permanently in databases and fetched when required. When data is stored in a static list, it can be used only during a single execution of the application. When the project is rebuilt, the data is lost. But when data is stored in databases, it is available as long as it is not manually deleted.
+
+A database must be created in SQL Server as follows:
+
+create database empdb
+use empdb
+
+The required tables will be automatically created by Entity Framework using the model classes, when the ASP.NET MVC application is executed.
+
+To add Entity Framework in an application, choose Tools->NuGet Package Manager->Package Manager Console. It shows the package manager prompt as "PM>".
+
+Type the following on the PM prompt:
+
+install-package entityframework
+

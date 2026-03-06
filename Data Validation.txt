@@ -1,0 +1,16 @@
+Validating Data using Data Validation Annotations
+
+ASP.NET MVC uses Data Annotation attributes from the System.ComponentModel.DataAnnotations namespace to to define and enforce validation rules on model properties. These attributes provide server-side as well as client-side validation with few lines of code.
+
+Some common Data Annotation attributes are as follows:
+
+[Required] - Specifies that a property must have a value and cannot be null or empty.
+[StringLength(maximumLength, MinimumLength = minimumLength)] - Defines the minimum and maximum length of a string property.
+[Range(minimumValue, maximumValue)] - Specifies that a numeric property's value must fall within a designated range.
+[EmailAddress]: Validates the property for a valid email format.
+[Compare("OtherPropertyName")] - Validates that two properties in a model have the same value, often used for password confirmation.
+[DataType(DataType.Type)] - Provides runtime information about the data type.
+[Display(Name = "Name")] - Specifies the user-friendly name to be displayed in the UI for a property, overriding the property name itself.
+
+The ModelState.AddModelError() method in ASP.NET MVC is used to add custom validation error messages to the ModelStateDictionary. These errors are then displayed to the user in the corresponding view. It is used to handle complex or custom validation logic that cannot be implemented using the data annotation attributes. When an error is added using this method, the ModelState.IsValid property automatically becomes false.
+

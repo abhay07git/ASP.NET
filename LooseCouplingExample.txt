@@ -1,0 +1,182 @@
+----------------------------------------------------------------------------------
+Data.cs (Model Class)
+----------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace LooseCouplingExample.Models
+{
+    public class Data
+    {
+        public int FirstNumber
+        {
+            get; set;
+        }
+        public int SecondNumber
+        {
+            get; set;
+        }
+    }
+}
+----------------------------------------------------------------------------------
+DataVM.cs (ViewModel Class)
+----------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using System.Web;
+using Antlr.Runtime.Tree;
+using LooseCouplingExample.Models;
+
+namespace LooseCouplingExample.ViewModels
+{
+    public class DataVM
+    {
+        Data data = new Data();
+        public int FirstNumber
+        {
+            get
+            {
+                return data.FirstNumber;
+            }
+            set
+            {
+                data.FirstNumber = value;
+            }
+        }
+        public int SecondNumber
+        {
+            get
+            {
+                return data.SecondNumber;
+            }
+            set
+            {
+                data.SecondNumber = value;
+            }
+        }
+        public int Addition
+        {
+            get
+            {
+                return data.FirstNumber + data.SecondNumber;
+            }
+        }
+        public int Subtraction
+        {
+            get
+            {
+                return data.FirstNumber - data.SecondNumber;
+            }
+        }
+        public int Multiplication
+        {
+            get
+            {
+                return data.FirstNumber * data.SecondNumber;
+            }
+        }
+        public int Division
+        {
+            get
+            {
+                return data.FirstNumber / data.SecondNumber;
+            }
+        }
+    }
+}
+----------------------------------------------------------------------------------
+CalcController.cs (Controller Class)
+----------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using LooseCouplingExample.ViewModels;
+
+namespace LooseCouplingExample.Controllers
+{
+    public class CalcController : Controller
+    {
+        // GET: Calc
+        public ActionResult Index()
+        {
+            return View(new DataVM());
+        }
+        public ActionResult ShowResults(DataVM dataVM)
+        {
+            return View(dataVM);
+        }
+    }
+}
+----------------------------------------------------------------------------------
+Index.cshtml (Index View)
+----------------------------------------------------------------------------------
+@model LooseCouplingExample.ViewModels.DataVM
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@using (Html.BeginForm("ShowResults", "Calc", FormMethod.Get))
+{
+    <table>
+        <caption>Enter Data</caption>
+        <tr>
+            <td>First Number: </td>
+            <td>@Html.TextBoxFor(d => d.FirstNumber)
+        </tr>
+        <tr>
+            <td>Second Number: </td>
+            <td>@Html.TextBoxFor(d => d.SecondNumber)</td>
+        </tr>
+        <tr>
+            <td><button type="submit">Calculate</button></td>
+            <td><button type="reset">Reset</button></td>
+        </tr>
+    </table>
+}
+----------------------------------------------------------------------------------
+ShowResults.cshtml (ShowResults View)
+----------------------------------------------------------------------------------
+@model LooseCouplingExample.ViewModels.DataVM
+
+@{
+    ViewBag.Title = "ShowResults";
+}
+
+<table>
+    <caption>Calculation Results</caption>
+    <tr>
+        <td>First Number: </td>
+        <td>@Model.FirstNumber</td>
+    </tr>
+    <tr>
+        <td>Second Number: </td>
+        <td>@Model.SecondNumber</td>
+    </tr>
+    <tr>
+        <td>Addition: </td>
+        <td>@Model.Addition</td>
+    </tr>
+    <tr>
+        <td>Subtraction: </td>
+        <td>@Model.Subtraction</td>
+    </tr>
+    <tr>
+        <td>Multiplication: </td>
+        <td>@Model.Multiplication</td>
+    </tr>
+    <tr>
+        <td>Division: </td>
+        <td>@Model.Division</td>
+    </tr>
+    <tr>
+        <td colspan="2">@Html.ActionLink("Back", "Index", "Calc")</td>
+    </tr>
+</table>
+----------------------------------------------------------------------------------

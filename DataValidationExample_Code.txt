@@ -1,0 +1,187 @@
+------------------------------------------------------------------------------
+Employee.cs (Model Class)
+------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+
+namespace DataValidationExample.Models
+{
+    public class Employee
+    {
+        [Required(ErrorMessage = "Please enter empno")]
+        [Display(Name = "EmpID")]
+        public int Empno
+        {
+            get; set;
+        }
+        [Required(ErrorMessage = "Please enter name")]
+        [StringLength(10,MinimumLength = 3,ErrorMessage = "Name must be 3 to 10 characters long")]
+        public string Name
+        {
+            get; set;
+        }
+        [Required(ErrorMessage = "Please enter salary")]
+        [Range(10000,70000,ErrorMessage = "Salary must be between 10000 and 70000")]
+        public int Salary
+        {
+            get; set;
+        }
+        [EmailAddress(ErrorMessage = "Please enter valid email")]
+        [Display(Name = "EmailID")]
+        public string Email
+        {
+            get; set;
+        }
+        [DataType(DataType.Password)]
+        public string Password
+        {
+            get; set;
+        }
+        [DataType(DataType.Password)]
+        [Compare("Password",ErrorMessage = "Password and confirmation password must be same")]
+        [Display(Name = "Confirm Password")]
+        public string ConfPassword
+        {
+            get; set;
+        }
+    }
+}
+------------------------------------------------------------------------------
+EmployeeController.cs (Controller Class)
+------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using DataValidationExample.Models;
+
+namespace DataValidationExample.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        private static List<Employee> emplist = new List<Employee>();
+        // GET: Employee
+        public ActionResult Index()
+        {
+            return View(emplist);
+        }
+
+        // GET: Employee/Details/5
+        public ActionResult Details(int id)
+        {
+            Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+            return View(employee);
+        }
+
+        // GET: Employee/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Employee/Create
+        [HttpPost]
+        public ActionResult Create(Employee collection)
+        {
+            try
+            {
+                // TODO: Add insert logic here
+                string name = collection.Name;
+                if (!name.Equals(name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower()))
+                {
+                    ModelState.AddModelError("Name", "Name must be entered in proper case");
+                }
+                if (collection.Salary == 40000 || collection.Salary == 50000)
+                {
+                    ModelState.AddModelError("Salary", "Salary must not be 40000 or 50000");
+                }
+                if (ModelState.IsValid)
+                {
+                    emplist.Add(collection);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View();
+                }
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Employee/Edit/5
+        public ActionResult Edit(int id)
+        {
+            Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+            return View(employee);
+        }
+
+        // POST: Employee/Edit/5
+        [HttpPost]
+        public ActionResult Edit(int id, Employee collection)
+        {
+            try
+            {
+                string name = collection.Name;
+                if (!name.Equals(name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower()))
+                {
+                    ModelState.AddModelError("Name", "Name must be entered in proper case");
+                }
+                if(collection.Salary==40000 || collection.Salary==50000)
+                {
+                    ModelState.AddModelError("Salary", "Salary must not be 40000 or 50000");
+                }
+                if (ModelState.IsValid)
+                {
+                    Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+                    employee.Name = collection.Name;
+                    employee.Salary = collection.Salary;
+                    employee.Email = collection.Email;
+                    employee.Password = collection.Password;
+                    employee.ConfPassword = collection.ConfPassword;
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View();
+                }
+                // TODO: Add update logic here
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Employee/Delete/5
+        public ActionResult Delete(int id)
+        {
+            Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+            return View(employee);
+        }
+
+        // POST: Employee/Delete/5
+        [HttpPost]
+        public ActionResult Delete(int id, Employee collection)
+        {
+            try
+            {
+                // TODO: Add delete logic here
+                Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+                emplist.Remove(employee);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
+}
+------------------------------------------------------------------------------

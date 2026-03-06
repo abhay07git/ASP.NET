@@ -1,0 +1,20 @@
+Layouts in ASP.NET MVC
+
+Layouts in ASP.NET MVC are used to maintain a consistent look and feel across multiple pages in an application. They define a common site template for shared UI elements like headers, navigation menus, and footers, reducing code duplication.
+
+A layout file is a Razor view file, typically named _Layout.cshtml and stored in the Views/Shared folder. It contains the boilerplate HTML structure (<html>, <head>, <body>, etc.) for the entire application.
+
+The @RenderBody() method in the layout file is a placeholder where the content of the individual child views will be rendered dynamically at runtime. Every layout must include a call to this method exactly once.
+
+The @RenderSection() method defines optional or required content sections within the layout (e.g., for page-specific scripts or styles) that child views can implement using the @section { ... } syntax. The method can take a required parameter to specify if the section is mandatory for child views. The default value of the required parameter is true, which means that the section is mandatory for child views. It can be made false to allow avoiding the section to be created.
+
+An alternate output can be shown instead of the section, by using the @RenderSection conditionally as follows:
+
+@if(IsSectionDefined)
+{
+   @RenderSection("sectionname")
+}
+else
+{
+   Any other content
+}

@@ -1,0 +1,15 @@
+Scaffolding in ASP.NET MVC
+
+Scaffolding in ASP.NET MVC is a code generation framework that can be used to generate code for standard application functions, particularly the basic CRUD (Create, Read, Update, and Delete) operations against a database model or a static list. It saves developers significant time by generating the necessary controllers, views, and data access logic (using Entity Framework) based on existing data models.
+
+The following methods are added in the Controller by scaffolding:
+
+1. Index() - This method exists as only GET [HttpGet] and is usually used to show list of model objects. The List template must be chosen while adding its view.
+
+2. Details() - This method exists as only GET [HttpGet] and is usually used to show a single model object.
+
+3. Create() - This method exists as GET [HttpGet] as well as POST [HttpPost]. The GET version of Create() has no parameters and is used to collect input from the user. The POST version of Create() has a FormCollection parameter and is used to implement the Insert logic.
+
+4. Edit() - This method exists as GET [HttpGet] as well as POST [HttpPost]. The GET version of Edit() has one id parameter and is used to collect input from the user. The POST version of Edit() has an id and a FormCollection parameter and is used to implement the Update logic.
+
+5. Delete() - This method exists as GET [HttpGet] as well as POST [HttpPost]. The GET version of Delete() has one id parameter and is used to collect input from the user. The POST version of Delete() has an id and a FormCollection parameter and is used to implement the Delete logic.

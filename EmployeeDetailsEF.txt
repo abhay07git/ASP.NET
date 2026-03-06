@@ -1,0 +1,240 @@
+--------------------------------------------------------------------------------
+Employee.cs (Model Class)
+--------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EmployeeDetailsEF.Models
+{
+    public class Employee
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int Empno
+        {
+            get; set;
+        }
+        public string Name
+        {
+            get; set;
+        }
+        public int Salary
+        {
+            get; set;
+        }
+    }
+}
+--------------------------------------------------------------------------------
+EmployeeContext.cs (Context Class)
+--------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.Entity;
+using EmployeeDetailsEF.Models;
+
+namespace EmployeeDetailsEF.Context
+{
+    public class EmployeeContext : DbContext
+    {
+        public DbSet<Employee> EmpRecords
+        {
+            get; set;
+        }
+    }
+}
+--------------------------------------------------------------------------------
+EmployeeController.cs (Controller Class)
+--------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using EmployeeDetailsEF.Models;
+using EmployeeDetailsEF.Context;
+using System.Data.Entity;
+
+namespace EmployeeDetailsEF.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        private EmployeeContext ctx = new EmployeeContext();
+        // GET: Employee
+        public ActionResult Index()
+        {
+            return View(ctx.EmpRecords);
+        }
+        public ActionResult AcceptEmployee()
+        {
+            return View();
+        }
+        public ActionResult AddEmployee(int e, string n, int s)
+        {
+            Employee emp = new Employee { Empno = e, Name = n, Salary = s };
+            ctx.EmpRecords.Add(emp);
+            ctx.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        public ActionResult ShowEmployee(int e)
+        {
+            Employee employee = (from Employee emp in ctx.EmpRecords where emp.Empno == e select emp).FirstOrDefault();
+            return View(employee);
+        }
+    }
+}
+--------------------------------------------------------------------------------
+Index.cshtml (Index View)
+--------------------------------------------------------------------------------
+@model IEnumerable<EmployeeDetailsEF.Models.Employee>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <h1>
+        @Html.ActionLink("Add New Employee", "AcceptEmployee", "Employee")
+    </h1>
+    <table>
+        <caption>Employee List</caption>
+        <tr>
+            <th>Empno</th>
+            <th>Name</th>
+            <th>Salary</th>
+        </tr>
+        @foreach (var emp in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(emp.Empno.ToString(), "ShowEmployee", new { e = emp.Empno })
+                </td>
+                <td>@emp.Name</td>
+                <td>@emp.Salary</td>
+            </tr>
+        }
+    </table>
+</body>
+</html>
+--------------------------------------------------------------------------------
+AcceptEmployee.cshtml (AcceptEmployee View)
+--------------------------------------------------------------------------------
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>AcceptEmployee</title>
+</head>
+<body>
+    @using (Html.BeginForm("AddEmployee", "Employee", FormMethod.Get))
+    {
+        <table>
+            <caption>Enter Employee Data</caption>
+            <tr>
+                <td>Empno: </td>
+                <td>@Html.TextBox("e")</td>
+            </tr>
+            <tr>
+                <td>Name: </td>
+                <td>@Html.TextBox("n")</td>
+            </tr>
+            <tr>
+                <td>Salary: </td>
+                <td>@Html.TextBox("s")</td>
+            </tr>
+            <tr>
+                <td><button type="submit">Add Employee</button></td>
+                <td><button type="reset">Clear Data</button></td>
+            </tr>
+        </table>
+    }
+</body>
+</html>
+--------------------------------------------------------------------------------
+ShowEmployee.cshtml (ShowEmployee View)
+--------------------------------------------------------------------------------
+@model EmployeeDetailsEF.Models.Employee
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ShowEmployee</title>
+</head>
+<body>
+    <table>
+        <caption>Employee Data</caption>
+        <tr>
+            <td>Empno: </td>
+            <td>@Model.Empno</td>
+        </tr>
+        <tr>
+            <td>Name: </td>
+            <td>@Model.Name</td>
+        </tr>
+        <tr>
+            <td>Salary: </td>
+            <td>@Model.Salary</td>
+        </tr>
+        <tr>
+            <td colspan="2">@Html.ActionLink("Back", "Index", "Employee")</td>
+        </tr>
+    </table>
+</body>
+</html>
+--------------------------------------------------------------------------------
+In root level Web.config (after <appSettings></appSettings>)
+--------------------------------------------------------------------------------
+<connectionStrings>
+	<add name="EmployeeContext" providerName="System.Data.SqlClient"
+		 connectionString="Data Source=DESKTOP-FK1RUHC;Initial Catalog=empdb;Integrated Security=true"/>
+</connectionStrings>
+--------------------------------------------------------------------------------
+emp.css (Stylesheet in Styles folder)
+--------------------------------------------------------------------------------
+table {
+    border: 20px outset red;
+    background-color: cyan;
+    color: blue;
+    font-size: 32px;
+}
+td, th {
+    border: 2px solid blue;
+}
+a, input, button {
+    font-size: 32px;
+}
+button {
+    width: 100%;
+}
+--------------------------------------------------------------------------------
+_ViewStart.cshtml (In Views folder)
+--------------------------------------------------------------------------------
+<link rel="stylesheet" type="text/css" href="~/Styles/emp.css" />
+--------------------------------------------------------------------------------
+In App_Start/RouteConfig.cs
+--------------------------------------------------------------------------------
+defaults: new { controller = "Employee", action = "Index", id = UrlParameter.Optional }
+--------------------------------------------------------------------------------

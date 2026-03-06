@@ -1,0 +1,365 @@
+Performing CRUD operations on a static list using model class object
+
+---------------------------------------------------------------------------------
+Product.cs (Model Class)
+---------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace ProductDetailsCRUD.Models
+{
+    public class Product
+    {
+        public int ProdId
+        {
+            get; set;
+        }
+        public string Name
+        {
+            get; set;
+        }
+        public float Price
+        {
+            get; set;
+        }
+        public int Quantity
+        {
+            get; set;
+        }
+        public float Value
+        {
+            get
+            {
+                return Price * Quantity;
+            }
+        }
+    }
+}
+---------------------------------------------------------------------------------
+ProductController.cs (Controller Class)
+---------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using ProductDetailsCRUD.Models;
+
+namespace ProductDetailsCRUD.Controllers
+{
+    public class ProductController : Controller
+    {
+        private static List<Product> prodlist = new List<Product>();
+        // GET: Product
+        public ActionResult Index()
+        {
+            return View(prodlist);
+        }
+        public ActionResult AcceptProduct()
+        {
+            return View();
+        }
+        public ActionResult AddProduct(int i, string n, float p, int q)
+        {
+            Product product = new Product { ProdId = i, Name = n, Price = p, Quantity = q };
+            prodlist.Add(product);
+            return RedirectToAction("Index");
+        }
+        public ActionResult ShowProduct(int i)
+        {
+            Product product = (from Product p in prodlist where p.ProdId == i select p).FirstOrDefault();
+            return View(product);
+        }
+        public ActionResult ConfirmDelete(int i)
+        {
+            Product product = (from Product p in prodlist where p.ProdId == i select p).FirstOrDefault();
+            return View(product);
+        }
+        public ActionResult DeleteProduct(int i)
+        {
+            Product product = (from Product p in prodlist where p.ProdId == i select p).FirstOrDefault();
+            prodlist.Remove(product);
+            return RedirectToAction("Index");
+        }
+        public ActionResult ConfirmUpdate(int i)
+        {
+            Product product = (from Product p in prodlist where p.ProdId == i select p).FirstOrDefault();
+            return View(product);
+        }
+        public ActionResult UpdateProduct(int i, string n, float p, int q)
+        {
+            Product product = (from Product pr in prodlist where pr.ProdId == i select pr).FirstOrDefault();
+            product.Name = n;
+            product.Price = p;
+            product.Quantity = q;
+            return RedirectToAction("Index");
+        }
+    }
+}
+---------------------------------------------------------------------------------
+Index.cshtml (Index View)
+---------------------------------------------------------------------------------
+@using ProductDetailsCRUD.Models
+@model IEnumerable<ProductDetailsCRUD.Models.Product>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Index</title>
+    </head>
+    <body>
+        <h1>@Html.ActionLink("Add New Product", "AcceptProduct", "Product")</h1>
+        <table>
+            <caption>Product List</caption>
+            <tr>
+                <th>ProdID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Value</th>
+                <th>Delete</th>
+                <th>Update</th>
+            </tr>
+            @foreach (Product prod in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(@prod.ProdId.ToString(), "ShowProduct", new { i = prod.ProdId })
+                    </td>
+                    <td>@prod.Name</td>
+                    <td>@prod.Price</td>
+                    <td>@prod.Quantity</td>
+                    <td>@prod.Value</td>
+                    <td>@Html.ActionLink("Delete", "ConfirmDelete", new { i = prod.ProdId }) </td>
+                    <td>@Html.ActionLink("Update", "ConfirmUpdate", new { i = prod.ProdId, n = prod.Name, p = prod.Price, q = prod.Quantity })</td>
+                </tr>
+            }
+        </table>
+    </body>
+</html>
+---------------------------------------------------------------------------------
+AcceptProduct.cshtml (AcceptProduct View)
+---------------------------------------------------------------------------------
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>AcceptProduct</title>
+    </head>
+    <body>
+        @using (Html.BeginForm("AddProduct", "Product", FormMethod.Get))
+        {
+            <table>
+                <caption>Enter Product Details</caption>
+                <tr>
+                    <td>ID: </td>
+                    <td>@Html.TextBox("i")</td>
+                </tr>
+                <tr>
+                    <td>Name: </td>
+                    <td>@Html.TextBox("n")</td>
+                </tr>
+                <tr>
+                    <td>Price: </td>
+                    <td>@Html.TextBox("p")</td>
+                </tr>
+                <tr>
+                    <td>Quantity: </td>
+                    <td>@Html.TextBox("q")</td>
+                </tr>
+                <tr>
+                    <td><button type="submit">Add Product</button></td>
+                    <td><button type="reset">Clear Data</button></td>
+                </tr>
+                <tr>
+                    <td class="last" colspan="2">@Html.ActionLink("Back", "Index", "Product")</td>
+                </tr>
+            </table>
+        }
+    </body>
+</html>
+---------------------------------------------------------------------------------
+ShowProduct.cshtml (ShowProduct View)
+---------------------------------------------------------------------------------
+@model ProductDetailsCRUD.Models.Product
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>ShowProduct</title>
+    </head>
+    <body>
+        <table>
+            <caption>Product Data</caption>
+            <tr>
+                <td>ID: </td>
+                <td>@Model.ProdId</td>
+            </tr>
+            <tr>
+                <td>Name: </td>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <td>Price: </td>
+                <td>@Model.Price</td>
+            </tr>
+            <tr>
+                <td>Quantity: </td>
+                <td>@Model.Quantity</td>
+            </tr>
+            <tr>
+                <td>Value: </td>
+                <td>@Model.Value</td>
+            </tr>
+            <tr>
+                <td class="last" colspan="2">@Html.ActionLink("Back", "Index", "Product")</td>
+            </tr>
+        </table>
+    </body>
+</html>
+---------------------------------------------------------------------------------
+ConfirmDelete.cshtml (ConfirmDelete View)
+---------------------------------------------------------------------------------
+@model ProductDetailsCRUD.Models.Product
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>ConfirmDelete</title>
+    </head>
+    <body>
+        <table>
+            <caption>Product Data</caption>
+            <tr>
+                <td>ID: </td>
+                <td>@Model.ProdId</td>
+            </tr>
+            <tr>
+                <td>Name: </td>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <td>Price: </td>
+                <td>@Model.Price</td>
+            </tr>
+            <tr>
+                <td>Quantity: </td>
+                <td>@Model.Quantity</td>
+            </tr>
+            <tr>
+                <td>Value: </td>
+                <td>@Model.Value</td>
+            </tr>
+            <tr>
+                <td class="last">@Html.ActionLink("Back", "Index", "Product")</td>
+                <td class="last">@Html.ActionLink("Delete", "DeleteProduct", new { i = Model.ProdId })</td>
+            </tr>
+        </table>
+    </body>
+</html>
+---------------------------------------------------------------------------------
+ConfirmUpdate.cshtml (ConfirmUpdate View)
+---------------------------------------------------------------------------------
+@model ProductDetailsCRUD.Models.Product
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>ConfirmUpdate</title>
+    </head>
+    <body>
+        @using (Html.BeginForm("UpdateProduct", "Product", FormMethod.Get))
+        {
+            <table>
+                <caption>Enter New Product Details</caption>
+                <tr>
+                    <td>ID: </td>
+                    <td>@Html.TextBox("i", Model.ProdId, new {@readonly="readonly"})</td>
+                </tr>
+                <tr>
+                    <td>Name: </td>
+                    <td>@Html.TextBox("n", Model.Name)</td>
+                </tr>
+                <tr>
+                    <td>Price: </td>
+                    <td>@Html.TextBox("p", Model.Price)</td>
+                </tr>
+                <tr>
+                    <td>Quantity: </td>
+                    <td>@Html.TextBox("q", Model.Quantity)</td>
+                </tr>
+                <tr>
+                    <td><button type="submit">Update Product</button></td>
+                    <td><button type="reset">Clear Data</button></td>
+                </tr>
+                <tr>
+                    <td class="last" colspan="2">@Html.ActionLink("Back", "Index", "Product")</td>
+                </tr>
+            </table>
+        }
+    </body>
+</html>
+---------------------------------------------------------------------------------
+prod.css (Stylesheet)
+---------------------------------------------------------------------------------
+table{
+    font-size: 32px;
+    border: 20px outset red;
+    background-color: cyan;
+    color: blue;
+}
+th, td {
+    border: 2px solid blue;
+}
+input, button {
+    font-size: 32px;
+}
+button {
+    width: 100%;
+}
+a {
+    font-size: 32px;
+}
+.last {
+    text-align: center;
+}
+---------------------------------------------------------------------------------
+_ViewStart.cshtml (_ViewStart View in Views folder)
+---------------------------------------------------------------------------------
+<link rel="stylesheet" type="text/css" href="~/Styles/prod.css" />
+---------------------------------------------------------------------------------
+In App_Start/RouteConfig.cs
+---------------------------------------------------------------------------------
+defaults: new { controller = "Product", action = "Index", id = UrlParameter.Optional }
+---------------------------------------------------------------------------------

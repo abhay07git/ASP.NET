@@ -1,0 +1,148 @@
+--------------------------------------------------------------------------------
+Employee.cs (Model Class)
+--------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace ScaffoldingExample.Models
+{
+    public class Employee
+    {
+        public int Empno
+        {
+            get; set;
+        }
+        public string Name
+        {
+            get; set;
+        }
+        public int Salary
+        {
+            get; set;
+        }
+        public float Incentive
+        {
+            get
+            {
+                return (float)(Salary * 0.1);
+            }
+        }
+        public float Tax
+        {
+            get
+            {
+                return (float)(Salary * 0.05);
+            }
+        }
+        public float Total
+        {
+            get
+            {
+                return Salary + Incentive - Tax;
+            }
+        }
+    }
+}
+--------------------------------------------------------------------------------
+EmployeeController.cs (Controller Class)
+--------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using ScaffoldingExample.Models;
+
+namespace ScaffoldingExample.Controllers
+{
+    public class EmployeeController : Controller
+    {
+        // GET: Employee
+        private static List<Employee> emplist = new List<Employee>();
+        public ActionResult Index()
+        {
+            return View(emplist);
+        }
+
+        // GET: Employee/Details/5
+        public ActionResult Details(int id)
+        {
+            Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+            return View(employee);
+        }
+
+        // GET: Employee/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Employee/Create
+        [HttpPost]
+        public ActionResult Create(Employee collection)
+        {
+            try
+            {
+                // TODO: Add insert logic here
+                emplist.Add(collection);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Employee/Edit/5
+        public ActionResult Edit(int id)
+        {
+            Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+            return View(employee);
+        }
+
+        // POST: Employee/Edit/5
+        [HttpPost]
+        public ActionResult Edit(int id, Employee collection)
+        {
+            try
+            {
+                // TODO: Add update logic here
+                Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+                employee.Name = collection.Name;
+                employee.Salary = collection.Salary;
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: Employee/Delete/5
+        public ActionResult Delete(int id)
+        {
+            Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+            return View(employee);
+        }
+
+        // POST: Employee/Delete/5
+        [HttpPost]
+        public ActionResult Delete(int id, Employee collection)
+        {
+            try
+            {
+                // TODO: Add delete logic here
+                Employee employee = (from Employee emp in emplist where emp.Empno == id select emp).FirstOrDefault();
+                emplist.Remove(employee);
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
+}
+--------------------------------------------------------------------------------
